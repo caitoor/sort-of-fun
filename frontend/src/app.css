@@ -1,0 +1,97 @@
+/* Global Styles */
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@300;400;600&display=swap');
+
+:root {
+    --background-color: #121212;
+    --card-bg: #1E1E1E;
+    --text-color: #ffffff;
+    --primary-color: #dedede;
+    --secondary-color: #03dac6;
+    --border-color: #292929;
+    --hover-bg: #252525;
+    --font-family: 'Fira Sans', sans-serif;
+}
+
+body {
+    font-family: var(--font-family);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 0;
+}
+
+#app {
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: 100vh;
+}
+
+h1,
+h2,
+h3 {
+    color: var(--primary-color);
+    font-weight: 600;
+    text-align: center;
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary-color);
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--secondary-color);
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Table Styling */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+th,
+td {
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    text-align: left;
+}
+
+th {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    font-weight: 600;
+    cursor: pointer;
+}
+
+th:hover {
+    background-color: var(--secondary-color);
+}
+
+tr:nth-child(even) {
+    background-color: var(--hover-bg);
+}
+
+tr:hover {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+}
+
+img {
+    display: block;
+    width: 80px;
+    height: auto;
+    border-radius: 4px;
+    margin: auto;
+}
