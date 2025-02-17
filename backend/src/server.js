@@ -3,7 +3,8 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
-import gameRoutes from './routes/games.js';
+import gamesRouter from './routes/games.js';
+import themesRouter from './routes/themes.js';
 import setup from './setup.js';
 import fs from 'fs';
 
@@ -12,7 +13,8 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(cors());
-app.use('/api', gameRoutes);
+app.use('/api', gamesRouter);
+app.use('/api/themes', themesRouter);
 
 const PORT = process.env.PORT || 3000;
 

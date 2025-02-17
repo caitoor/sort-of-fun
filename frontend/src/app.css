@@ -84,8 +84,10 @@ tr:nth-child(even) {
 }
 
 tr:hover {
-    background-color: var(--primary-color);
-    color: var(--background-color);
+    background-color: rgba(255,
+            255,
+            255,
+            0.05);
 }
 
 img {
