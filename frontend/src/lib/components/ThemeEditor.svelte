@@ -1,7 +1,7 @@
 <script>
     import { get } from "svelte/store";
     import { themes } from "$lib/stores/themeStore.js";
-    import { hoveredGameId } from "$lib/stores/store.js";
+    import { hoveredGameId } from "$lib/stores/generalStore.js";
     export let allThemes = [];
     export let bggId;
     export let addTheme;

@@ -18,14 +18,51 @@ export function getBestPlayerCounts(playerRatings) {
  */
 export function formatBestPlayerCounts(game) {
     const bestCounts = getBestPlayerCounts(game.playerRatings);
-    return bestCounts.length > 0 ? bestCounts.join(", ") : "N/A";
+    return bestCounts.length > 0 ? abbreviateNumbers(bestCounts) : "N/A";
 }
 
 /**
  * Formats player count as a range or single number.
  * @param {Object} game - The game object.
- * @returns {string} - Formatted player count range.
+ * @returns {sstring} - Formatted player count range.
  */
 export function formatPlayerCountRange(game) {
     return game.minPlayers === game.maxPlayers ? `${game.minPlayers}` : `${game.minPlayers}-${game.maxPlayers}`;
+}
+
+
+/**
+ * Abbreviates an array of numbers into a string.
+ * Successive numbers are represented as a range.
+ * @param {Array<number>} numbers - Array of numbers to abbreviate.
+ * @returns {string} - Abbreviated string.
+ */
+export function abbreviateNumbers(numbers) {
+    if (!numbers || numbers.length === 0) return "";
+
+    numbers.sort((a, b) => a - b);
+
+    let result = [];
+    let start = numbers[0];
+    let end = numbers[0];
+
+    for (let i = 1; i < numbers.length; i++) {
+        if (numbers[i] === end + 1) {
+            end = numbers[i];
+        } else {
+            result.push(start === end ? `${start}` : `${start}-${end}`);
+            start = numbers[i];
+            end = numbers[i];
+        }
+    }
+    result.push(start === end ? `${start}` : `${start}-${end}`);
+
+    return result.join(", ");
+}
+
+// Decodes HTML entities like &#039; to actual characters
+export function decodeEntities(text) {
+    const textarea = document.createElement("textarea");
+    textarea.innerHTML = text;
+    return textarea.value;
 }

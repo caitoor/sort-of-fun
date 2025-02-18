@@ -1,57 +1,87 @@
 <script>
     // src/lib/components/GameTable.svelte
     // table of games
-    export let games = [];
-    export let showScore = false;
-    export let sortColumn = "name";
-    export let sortAscending = true;
-    export let onSortChange = () => {};
 
     import {
         formatBestPlayerCounts,
         formatPlayerCountRange,
+        decodeEntities,
     } from "$lib/utils.js";
 
+    import { sortedGames, updateSort } from "$lib/stores/gameStore.js";
+
+    import { themes } from "$lib/stores/themeStore.js";
+
+    // Function to handle sorting when clicking on column headers
     function handleSort(column) {
-        onSortChange(column);
+        updateSort(column);
     }
 </script>
 
 <table>
     <thead>
         <tr>
-            <th on:click={() => handleSort("name")}>Game Name</th>
-            <th on:click={() => handleSort("yearPublished")}>Year</th>
-            <th on:click={() => handleSort("playerCount")}>Players</th>
-            <th on:click={() => handleSort("playtime")}>Playtime</th>
-            <th on:click={() => handleSort("bggRating")}>Rating</th>
-            <th on:click={() => handleSort("bestPlayerCounts")}
-                >Best Player Counts</th
-            >
-            {#if showScore}
-                <th on:click={() => handleSort("score")}>Score</th>
-            {/if}
+            <th>Game</th>
+            <th>Year</th>
+            <th>Players</th>
+            <th>Playtime</th>
+            <th>Rating</th>
+            <th>Best at</th>
             <th>Thumbnail</th>
         </tr>
     </thead>
     <tbody>
-        {#each games as game}
+        {#each $sortedGames as game}
             <tr>
-                <td>{game.name}</td>
+                <td>
+                    <a
+                        href={"https://boardgamegeek.com/boardgame/" +
+                            game.bggId}
+                        target="_blank"
+                    >
+                        {decodeEntities(game.name)}
+                    </a>
+                    {#if $themes[game.bggId]?.length}
+                        <div class="game-themes">
+                            {#each $themes[game.bggId] as theme}
+                                <span class="theme-tag">{theme}</span>
+                            {/each}
+                        </div>
+                    {/if}
+                </td>
+
                 <td>{game.yearPublished || "N/A"}</td>
                 <td>{formatPlayerCountRange(game)}</td>
                 <td>{game.playtime} min</td>
                 <td>{game.bggRating ? game.bggRating.toFixed(2) : "N/A"}</td>
                 <td>{formatBestPlayerCounts(game)}</td>
-                {#if showScore}
-                    <td>{(game.score ?? 0).toFixed(2)}</td>
-                {/if}
                 <td>
                     {#if game.thumbnail}
-                        <img src={game.thumbnail} alt="{game.name} thumbnail" />
+                        <img
+                            src={game.thumbnail}
+                            alt="{game.name} thumbnail"
+                            class="thumbnail"
+                        />
                     {/if}
                 </td>
             </tr>
         {/each}
     </tbody>
 </table>
+
+<style>
+    .game-themes {
+        font-size: 12px;
+        margin-top: 4px;
+    }
+
+    .theme-tag {
+        background: #444;
+        color: white;
+        padding: 2px 6px;
+        margin: 2px;
+        border-radius: 12px;
+        font-size: 0.8em;
+        display: inline-block;
+    }
+</style>

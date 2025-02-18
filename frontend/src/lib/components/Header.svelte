@@ -11,55 +11,61 @@
     }
 </script>
 
-<nav>
-    <ul>
-        <li class={currentRoute === "/" ? "active" : ""}>
-            <a href="/">Overview</a>
-        </li>
-        <li class={currentRoute === "/game-selection" ? "active" : ""}>
-            <a href="/game-selection">Game Selection</a>
-        </li>
-        <li class={currentRoute === "/settings" ? "active" : ""}>
-            <a href="/settings">Settings</a>
-        </li>
-    </ul>
-</nav>
+<header>
+    <h1>sort-of-fun</h1>
+    <nav>
+        <ul>
+            <li class={currentRoute === "/" ? "active" : ""}>
+                <a href="/">Overview</a>
+            </li>
+            <li class={currentRoute === "/game-selection" ? "active" : ""}>
+                <a href="/game-selection">Game Selection</a>
+            </li>
+            <li class={currentRoute === "/settings" ? "active" : ""}>
+                <a href="/settings">Settings</a>
+            </li>
+        </ul>
+    </nav>
+</header>
 
 <style>
+    header {
+        display: flex;
+        justify-content: space-between;
+        align-content: center;
+        padding: 1em 0;
+    }
+
+    header h1 {
+        font-size: 1.5rem;
+        margin: 0;
+    }
+
     nav {
-        background-color: #1e1e1e;
-        padding: 15px;
-        border-bottom: 2px solid #292929;
+        display: flex;
+        align-items: center;
     }
 
     ul {
         display: flex;
-        justify-content: center;
         list-style: none;
+        align-items: center;
         padding: 0;
         margin: 0;
-    }
-
-    li {
-        margin: 0 20px;
+        gap: 2em;
     }
 
     a {
         text-decoration: none;
         color: var(--primary-color);
-        font-weight: 600;
-        font-size: 1.1rem;
-        padding: 8px 12px;
-        border-radius: 5px;
-        transition: background 0.3s;
-    }
-
-    a:hover {
-        background-color: #292929;
     }
 
     .active a {
-        background-color: var(--primary-color);
-        color: #121212;
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+
+    .active a:hover {
+        text-decoration: none;
     }
 </style>

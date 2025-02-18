@@ -3,12 +3,9 @@
 
 :root {
     --background-color: #121212;
-    --card-bg: #1E1E1E;
+    --hover-bg: #333;
     --text-color: #ffffff;
     --primary-color: #dedede;
-    --secondary-color: #03dac6;
-    --border-color: #292929;
-    --hover-bg: #252525;
     --font-family: 'Fira Sans', sans-serif;
 }
 
@@ -16,7 +13,6 @@ body {
     font-family: var(--font-family);
     background-color: var(--background-color);
     color: var(--text-color);
-    margin: 0;
     padding: 0;
 }
 
@@ -26,74 +22,60 @@ body {
     min-height: 100vh;
 }
 
-h1,
-h2,
-h3 {
-    color: var(--primary-color);
-    font-weight: 600;
-    text-align: center;
-}
-
 a {
     text-decoration: none;
     color: var(--primary-color);
-    transition: color 0.3s ease;
 }
 
 a:hover {
-    color: var(--secondary-color);
+    text-decoration: underline;
 }
 
 .container {
-    width: 90%;
+    width: 90vw;
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
 }
 
-/* Table Styling */
 table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background-color: var(--card-bg);
-    border-radius: 8px;
     overflow: hidden;
+    border-collapse: collapse;
+    width: 100%;
 }
+
+tr {
+    border: 1px solid #444;
+
+}
+
 
 th,
 td {
-    padding: 12px;
-    border: 1px solid var(--border-color);
-    text-align: left;
+    padding: .5em;
 }
 
 th {
-    background-color: var(--primary-color);
-    color: var(--background-color);
-    font-weight: 600;
+    text-align: left;
+    font-weight: 400;
     cursor: pointer;
+    background-color: rgba(255, 255, 255, .3);
 }
 
 th:hover {
-    background-color: var(--secondary-color);
+    background-color: #555;
 }
 
 tr:nth-child(even) {
-    background-color: var(--hover-bg);
+    background-color: #222;
 }
 
 tr:hover {
-    background-color: rgba(255,
-            255,
-            255,
-            0.05);
+    background-color: var(--hover-bg);
 }
 
-img {
-    display: block;
+.thumbnail {
+    height: 80px;
     width: 80px;
-    height: auto;
-    border-radius: 4px;
-    margin: auto;
+    object-fit: cover;
 }

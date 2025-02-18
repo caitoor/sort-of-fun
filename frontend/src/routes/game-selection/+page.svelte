@@ -1,12 +1,13 @@
 <script>
     import { onMount } from "svelte";
-    import { loadGames } from "$lib/utils.js";
+
+    import { fetchAndLoadGames, games } from "$lib/stores/gameStore.js";
+
     import GameFilter from "$lib/components/GameFilter.svelte";
     import GameTable from "$lib/components/GameTable.svelte";
     import { calculateFinalScore } from "$lib/gameScorer.js";
     import Header from "$lib/components/Header.svelte";
 
-    let games = [];
     let filteredGames = [];
     let loading = true;
     let filters = {
@@ -18,7 +19,7 @@
     };
 
     async function initialize() {
-        games = await loadGames();
+        await fetchAndLoadGames();
         filterGames();
         loading = false;
     }
@@ -29,7 +30,7 @@
     }
 
     function filterGames() {
-        filteredGames = games
+        filteredGames = $games
             .filter((game) => {
                 // Exclude games that are outside the selected player count range
                 if (filters.playerCount) {

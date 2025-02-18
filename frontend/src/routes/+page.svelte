@@ -14,8 +14,9 @@
     import {
         formatBestPlayerCounts,
         formatPlayerCountRange,
+        decodeEntities,
     } from "$lib/utils.js";
-    import { hoveredGameId } from "$lib/stores/store.js";
+    import { hoveredGameId } from "$lib/stores/generalStore.js";
 
     // games
     import {
@@ -71,7 +72,7 @@
                     }}
                     on:mouseleave={() => hoveredGameId.set(null)}
                 >
-                    <td>{game.name}</td>
+                    <td>{decodeEntities(game.name)}</td>
                     <td>{game.yearPublished || "N/A"}</td>
                     <td>{formatPlayerCountRange(game)}</td>
                     <td>{game.playtime} min</td>
@@ -103,9 +104,4 @@
 {/if}
 
 <style>
-    .thumbnail {
-        height: 80px;
-        width: 80px;
-        object-fit: cover;
-    }
 </style>
