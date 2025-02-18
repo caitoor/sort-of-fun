@@ -3,20 +3,23 @@
 
     // general
     import { onMount } from "svelte";
+    import { get } from "svelte/store";
 
     // stores
-    import { fetchAndLoadGames, loading } from "$lib/stores/gameStore.js";
+    import { fetchAndLoadGames, loading, sortedGames } from "$lib/stores/gameStore.js";
+    import { loadThemesForGames } from "$lib/stores/themeStore";
 
     // components
     import GameFilter from "$lib/components/GameFilter.svelte";
     import GameTable from "$lib/components/GameTable.svelte";
-    import Header from "$lib/components/Header.svelte";
     import Loader from "$lib/components/Loader.svelte";
 
-    onMount(fetchAndLoadGames);
+    onMount(async () => {
+        await fetchAndLoadGames();
+        await loadThemesForGames(get(sortedGames));
+    });
 </script>
 
-<Header />
 <GameFilter />
 
 {#if $loading}

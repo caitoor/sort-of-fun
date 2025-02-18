@@ -1,14 +1,32 @@
 <script>
-    // src/lib/components/GameFilter.svelte
-    // filter ui for games
-
     import {
         playerCount,
-        targetComplexity,
-        maxComplexityDeviation,
-        targetPlaytime,
-        maxPlaytimeDeviation,
+        minComplexity,
+        maxComplexity,
+        minPlaytime,
+        maxPlaytime,
     } from "$lib/stores/gameFilterStore.js";
+    import RangeSlider from "svelte-range-slider-pips";
+
+    // Lokale Werte für Range-Slider (initialisieren)
+    let complexityRange = [1, 5];
+    let playtimeRange = [10, 300];
+
+    // Funktion: Aktualisiert Complexity-Store
+    function updateComplexityRange(value) {
+        complexityRange = value.detail.values;
+        minComplexity.set(complexityRange[0]);
+        maxComplexity.set(complexityRange[1]);
+        // console.log(`🔹 Complexity Range: ${$minComplexity} - ${$maxComplexity}`);
+    }
+
+    // Funktion: Aktualisiert Playtime-Store
+    function updatePlaytimeRange(value) {
+        playtimeRange = value.detail.values;
+        minPlaytime.set(playtimeRange[0]);
+        maxPlaytime.set(playtimeRange[1]);
+        // console.log(`🔹 Playtime Range: ${$minPlaytime} - ${$maxPlaytime}`);
+    }
 </script>
 
 <div class="filter-panel">
@@ -21,45 +39,46 @@
             placeholder="Any"
         />
     </label>
-    <label>
-        Target Complexity:
-        <input
-            type="number"
-            step="0.1"
-            bind:value={$targetComplexity}
-            placeholder="Any"
-        />
-    </label>
-    <label>
-        Max Complexity Deviation:
-        <input
-            type="number"
-            step="0.1"
-            bind:value={$maxComplexityDeviation}
-            placeholder="Any"
-        />
-    </label>
-    <label>
-        Target Playtime:
-        <input type="number" bind:value={$targetPlaytime} placeholder="Any" />
-    </label>
-    <label>
-        Max Playtime Deviation:
-        <input
-            type="number"
-            bind:value={$maxPlaytimeDeviation}
-            placeholder="Any"
-        />
-    </label>
+
+    <!-- Complexity Range Slider -->
+    <!-- svelte-ignore a11y_label_has_associated_control -->
+    <label>Complexity: {$minComplexity} - {$maxComplexity}</label>
+    <RangeSlider
+        bind:values={complexityRange}
+        min={1}
+        max={5}
+        step={0.1}
+        float
+        pips
+        pushy
+        range
+        on:change={updateComplexityRange}
+    />
+
+    <!-- Playtime Range Slider -->
+    <!-- svelte-ignore a11y_label_has_associated_control -->
+    <label>Playtime: {$minPlaytime} - {$maxPlaytime} min</label>
+    <RangeSlider
+        bind:values={playtimeRange}
+        min={10}
+        max={300}
+        step={5}
+        pips
+        float
+        pushy
+        range
+        on:change={updatePlaytimeRange}
+    />
 </div>
 
 <style>
     .filter-panel {
         display: flex;
-        flex-wrap: wrap;
+        flex-direction: column;
         gap: 10px;
         padding: 10px;
-        border: 1px solid #555;
+        border: 1px solid #ccc;
+        border-radius: 5px;
         margin-bottom: 20px;
     }
 </style>

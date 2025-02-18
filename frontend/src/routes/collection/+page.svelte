@@ -7,7 +7,6 @@
     import { get } from "svelte/store";
 
     // components
-    import Header from "$lib/components/Header.svelte";
     import ThemeEditor from "$lib/components/ThemeEditor.svelte";
     import Loader from "$lib/components/Loader.svelte";
 
@@ -36,15 +35,7 @@
         removeThemeFromGame,
     } from "$lib/stores/themeStore.js";
 
-    // LOGIC
-    // =====
-    onMount(async () => {
-        await fetchAndLoadGames();
-        await loadThemesForGames(get(sortedGames)); // Ensure themes are loaded after games
-    });
 </script>
-
-<Header />
 
 {#if $loading}
     <div class="loading-container">
