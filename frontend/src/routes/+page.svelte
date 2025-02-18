@@ -19,8 +19,8 @@
 
     // games
     import {
-        sortedGames,
         fetchAndLoadGames,
+        sortedGames,
         updateSort,
         loading,
     } from "$lib/stores/gameStore.js";
@@ -38,11 +38,7 @@
     // =====
     onMount(async () => {
         await fetchAndLoadGames();
-        const gameList = get(sortedGames);
-
-        if (Array.isArray(gameList) && gameList.length > 0) {
-            await loadThemesForGames(gameList);
-        }
+        await loadThemesForGames(get(sortedGames)); // Ensure themes are loaded after games
     });
 </script>
 
@@ -61,7 +57,7 @@
                 <th>Players</th>
                 <th on:click={() => updateSort("playtime")}>Playtime</th>
                 <th on:click={() => updateSort("bggRating")}>Rating</th>
-                <th>Best Player Counts</th>
+                <th>Best at</th>
                 <th>Themes</th>
                 <th>Thumbnail</th>
             </tr>
