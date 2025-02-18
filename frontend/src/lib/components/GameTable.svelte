@@ -31,11 +31,10 @@
     <thead>
         <tr>
             <th>Game</th>
-            <th>Players</th>
-            <th>Playtime</th>
-            <th>BGG Rating</th>
-            <th>Complexity</th>
-            <th>Score</th>
+            <th class="centered">Players</th>
+            <th class="centered">Playtime</th>
+            <th class="centered">Complexity</th>
+            <th class="centered">Score</th>
             <th></th>
         </tr>
     </thead>
@@ -43,6 +42,7 @@
         {#each $filteredGames as game}
             <tr>
                 <td>
+                    <!-- Game name and year published -->
                     <a
                         href={"https://boardgamegeek.com/boardgame/" +
                             game.bggId}
@@ -63,8 +63,9 @@
                 </td>
 
                 <td>
+                    <!-- Player count range and best player counts -->
                     <div class="cell-container">
-                        {formatPlayerCountRange(game)}
+                        <div>{formatPlayerCountRange(game)}</div>
                         <div class="cell-sub">
                             (Best: {formatBestPlayerCounts(game)})
                         </div>
@@ -72,6 +73,7 @@
                 </td>
 
                 <td>
+                    <!-- Playtime range and estimated playtime -->
                     <div class="cell-container">
                         <div>
                             {estimatePlaytime(game) || game.maxPlaytime} min
@@ -84,9 +86,26 @@
                     </div>
                 </td>
 
-                <td>{game.bggRating ? game.bggRating.toFixed(2) : "N/A"}</td>
-                <td>{game.complexity ? game.complexity.toFixed(2) : "N/A"}</td>
-                <td>{game.score ? game.score.toFixed(2) : "N/A"}</td>
+                <td>
+                    <!-- Complexity rating -->
+                    <div class="cell-container">
+                        {game.complexity ? game.complexity.toFixed(2) : ""}
+                    </div>
+                </td>
+
+                <td>
+                    <!-- Scoring based on BGG rating -->
+                    <div class="cell-container">
+                        <div>
+                            {game.score ? game.score.toFixed(2) : "N/A"}
+                        </div>
+                        {#if game.bggRating && game.bggRating.toFixed(2) !== game.score.toFixed(2)}
+                            <div class="cell-sub">
+                                ({game.bggRating.toFixed(2)})
+                            </div>
+                        {/if}
+                    </div>
+                </td>
                 <td>
                     {#if game.thumbnail}
                         <img
