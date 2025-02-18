@@ -19,15 +19,36 @@ app.use('/api/themes', themesRouter);
 const PORT = process.env.PORT || 3000;
 
 /**
- * Checks if the SQLite database exists and runs setup if missing.
+ * Checks if the required tables exist in the SQLite database and runs setup if missing.
  */
 async function checkDatabaseAndSetup() {
     const dbFile = "./boardgames.sqlite";
+
+    // If database file does not exist, setup must be run
     if (!fs.existsSync(dbFile)) {
         console.log("📢 Database not found. Running setup...");
         await setup();
-    } else {
-        console.log("✅ Database already exists. Skipping setup.");
+        return;
+    }
+
+    // Import database connection dynamically
+    const db = (await import("./db.js")).default;
+
+    try {
+        const tables = await db.raw("SELECT name FROM sqlite_master WHERE type='table'");
+        const tableNames = tables.map(t => t.name);
+
+        // Check if both necessary tables exist
+        if (!tableNames.includes("games") || !tableNames.includes("player_ratings")) {
+            console.log("📢 Required tables missing. Running setup...");
+            await setup();
+        } else {
+            console.log("✅ Database and tables exist. Skipping setup.");
+        }
+    } catch (error) {
+        console.error("❌ Error checking database tables:", error);
+        console.log("📢 Running setup as a precaution...");
+        await setup();
     }
 }
 

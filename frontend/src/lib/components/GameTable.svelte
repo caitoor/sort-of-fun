@@ -1,20 +1,29 @@
 <script>
-    // src/lib/components/GameTable.svelte
-    // table of games
-
+    import { filteredGames, playerCount } from "$lib/stores/gameFilterStore.js";
+    import { themes } from "$lib/stores/themeStore.js";
     import {
         formatBestPlayerCounts,
         formatPlayerCountRange,
         decodeEntities,
     } from "$lib/utils.js";
 
-    import { sortedGames, updateSort } from "$lib/stores/gameStore.js";
+    function estimatePlaytime(game) {
+        const { minPlayers, maxPlayers, minPlaytime, maxPlaytime } = game;
 
-    import { themes } from "$lib/stores/themeStore.js";
+        if (minPlaytime === maxPlaytime) {
+            return null; // No range, just use max playtime
+        }
 
-    // Function to handle sorting when clicking on column headers
-    function handleSort(column) {
-        updateSort(column);
+        if (
+            !$playerCount ||
+            $playerCount < minPlayers ||
+            $playerCount > maxPlayers
+        ) {
+            return Math.round((minPlaytime + maxPlaytime) / 2); // No specific player count -> return average playtime
+        }
+
+        const factor = ($playerCount - minPlayers) / (maxPlayers - minPlayers);
+        return Math.round(minPlaytime + factor * (maxPlaytime - minPlaytime));
     }
 </script>
 
@@ -22,16 +31,16 @@
     <thead>
         <tr>
             <th>Game</th>
-            <th>Year</th>
             <th>Players</th>
             <th>Playtime</th>
-            <th>Rating</th>
-            <th>Best at</th>
-            <th>Thumbnail</th>
+            <th>BGG Rating</th>
+            <th>Complexity</th>
+            <th>Score</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
-        {#each $sortedGames as game}
+        {#each $filteredGames as game}
             <tr>
                 <td>
                     <a
@@ -41,6 +50,9 @@
                     >
                         {decodeEntities(game.name)}
                     </a>
+                    <span class="year-published"
+                        >({game.yearPublished || ""})</span
+                    >
                     {#if $themes[game.bggId]?.length}
                         <div class="game-themes">
                             {#each $themes[game.bggId] as theme}
@@ -50,11 +62,31 @@
                     {/if}
                 </td>
 
-                <td>{game.yearPublished || "N/A"}</td>
-                <td>{formatPlayerCountRange(game)}</td>
-                <td>{game.playtime} min</td>
+                <td>
+                    <div class="cell-container">
+                        {formatPlayerCountRange(game)}
+                        <div class="cell-sub">
+                            (Best: {formatBestPlayerCounts(game)})
+                        </div>
+                    </div>
+                </td>
+
+                <td>
+                    <div class="cell-container">
+                        <div>
+                            {estimatePlaytime(game) || game.maxPlaytime} min
+                        </div>
+                        {#if game.minPlaytime !== game.maxPlaytime}
+                            <div class="cell-sub">
+                                ({game.minPlaytime} - {game.maxPlaytime})
+                            </div>
+                        {/if}
+                    </div>
+                </td>
+
                 <td>{game.bggRating ? game.bggRating.toFixed(2) : "N/A"}</td>
-                <td>{formatBestPlayerCounts(game)}</td>
+                <td>{game.complexity ? game.complexity.toFixed(2) : "N/A"}</td>
+                <td>{game.score ? game.score.toFixed(2) : "N/A"}</td>
                 <td>
                     {#if game.thumbnail}
                         <img
@@ -83,5 +115,18 @@
         border-radius: 12px;
         font-size: 0.8em;
         display: inline-block;
+    }
+
+    .cell-container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .cell-sub,
+    .year-published {
+        font-size: 0.8em;
+        color: #888;
     }
 </style>

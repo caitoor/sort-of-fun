@@ -16,10 +16,10 @@
     <nav>
         <ul>
             <li class={currentRoute === "/" ? "active" : ""}>
-                <a href="/">Overview</a>
+                <a href="/">Game Selection</a>
             </li>
-            <li class={currentRoute === "/game-selection" ? "active" : ""}>
-                <a href="/game-selection">Game Selection</a>
+            <li class={currentRoute === "/collection" ? "active" : ""}>
+                <a href="/collection">Collection</a>
             </li>
             <li class={currentRoute === "/settings" ? "active" : ""}>
                 <a href="/settings">Settings</a>
