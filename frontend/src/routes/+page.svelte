@@ -1,14 +1,31 @@
 <script>
+    // IMPORTS
+    // =======
+
+    // general
     import { onMount } from "svelte";
-    import { fetchGames } from "$lib/api.js";
+    import { get } from "svelte/store";
+
+    // components
     import Header from "$lib/components/Header.svelte";
     import ThemeEditor from "$lib/components/ThemeEditor.svelte";
+
+    // utils
     import {
-        loadGames,
-        sortBy,
         formatBestPlayerCounts,
         formatPlayerCountRange,
     } from "$lib/utils.js";
+    import { hoveredGameId } from "$lib/stores/store.js";
+
+    // games
+    import {
+        sortedGames,
+        fetchAndLoadGames,
+        updateSort,
+        loading,
+    } from "$lib/stores/gameStore.js";
+
+    // themes
     import {
         themes,
         allThemes,
@@ -17,36 +34,23 @@
         removeThemeFromGame,
     } from "$lib/stores/themeStore.js";
 
-    import { hoveredGameId } from "$lib/stores/store.js";
-
-    let games = [];
-    let loading = true;
-    let sortColumn = "name";
-    let sortAscending = true;
-
-    function updateSort(column) {
-        sortColumn =
-            column === sortColumn ? (sortAscending ? column : null) : column;
-        sortAscending = !sortAscending;
-        games = [...sortBy(games, column, sortAscending)];
-    }
-
+    // LOGIC
+    // =====
     onMount(async () => {
-        games = await loadGames();
-        // console.log("📥 Loaded games:", games);
+        await fetchAndLoadGames();
+        const gameList = get(sortedGames);
 
-        await loadThemesForGames(games);
-        // console.log("📥 Loaded themes:", $themes, $allThemes);
-
-        loading = false;
+        if (Array.isArray(gameList) && gameList.length > 0) {
+            await loadThemesForGames(gameList);
+        }
     });
 </script>
 
 <Header />
 
-{#if loading}
+{#if $loading}
     <p class="loading">Loading games...</p>
-{:else if games.length === 0}
+{:else if !$sortedGames.length}
     <p class="empty">No games found.</p>
 {:else}
     <table>
@@ -63,7 +67,7 @@
             </tr>
         </thead>
         <tbody>
-            {#each games as game}
+            {#each $sortedGames as game}
                 <tr
                     on:mouseenter={() => {
                         // console.log("🔍 Hovering over:", game.bggId);
@@ -81,7 +85,7 @@
                     <td>
                         <ThemeEditor
                             bggId={game.bggId}
-                            {themes}
+                            themes={$themes}
                             allThemes={$allThemes}
                             addTheme={addThemeToGame}
                             removeTheme={removeThemeFromGame}
