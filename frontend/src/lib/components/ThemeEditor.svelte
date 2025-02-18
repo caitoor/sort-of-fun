@@ -52,15 +52,6 @@
 </script>
 
 <div class="theme-container">
-    {#each gameThemes as theme}
-        <span class="theme-tag">
-            {theme}
-            <button
-                class="remove-theme"
-                on:click={() => removeTheme(bggId, theme)}>X</button
-            >
-        </span>
-    {/each}
     {#if $hoveredGameId === bggId}
         <div class="theme-input-container">
             <input
@@ -89,17 +80,32 @@
             {/if}
         </div>
     {/if}
+    <div class="game-themes">
+        {#each gameThemes as theme}
+            <div class="theme-tag">
+                {theme}
+                <button
+                    class="remove-theme"
+                    on:click={() => removeTheme(bggId, theme)}>X</button
+                >
+            </div>
+        {/each}
+    </div>
 </div>
 
 <style>
     .theme-container {
         display: flex;
         flex-wrap: wrap;
+        flex-direction: column;
+        gap: .5em;
     }
+
     .theme-input-container {
         position: relative;
-        display: inline-block;
+        display: block;
     }
+
     .dropdown {
         position: absolute;
         width: 100%;
@@ -112,17 +118,23 @@
         margin: 0;
         z-index: 10;
     }
+
     .dropdown li {
         padding: 6px;
         cursor: pointer;
         color: white;
     }
+
     .dropdown li:hover {
         background: #444;
     }
 
+    .game-themes {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
     .theme-tag {
-        display: inline-flex;
         align-items: center;
         background: #333;
         color: white;

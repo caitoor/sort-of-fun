@@ -92,6 +92,7 @@
                             <img
                                 src={game.thumbnail}
                                 alt="{game.name} thumbnail"
+                                class="thumbnail"
                             />
                         {/if}
                     </td>
@@ -100,3 +101,11 @@
         </tbody>
     </table>
 {/if}
+
+<style>
+    .thumbnail {
+        height: 80px;
+        width: 80px;
+        object-fit: cover;
+    }
+</style>
