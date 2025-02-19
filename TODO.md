@@ -1,0 +1,7 @@
+- implement user ratings and use them instead of BGG ratings where possible.
+- add a flag whether a game has already been played or not.
+- add interface to select game themes to create a bonus or malus to the rating.
+- implement age recommendations
+- add a way to add game mechanics to games and filter by them
+- refresh existing data regularly without overusing the BGG API
+- add friends with their own bgg usernames and optionally add their games to the list

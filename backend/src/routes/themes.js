@@ -100,6 +100,7 @@ router.get('/', async (req, res) => {
         const themes = await db('game_themes').distinct('theme');
         res.json(themes.map(t => t.theme));
     } catch (error) {
+        console.error("❌ Error fetching themes:", error);
         res.status(500).json({ error: 'Error fetching themes' });
     }
 });
