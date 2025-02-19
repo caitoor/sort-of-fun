@@ -1,4 +1,5 @@
 <script>
+    // src/lib/components/GameFilter.svelte
     import {
         playerCount,
         minComplexity,
@@ -10,7 +11,7 @@
 
     // Lokale Werte für Range-Slider (initialisieren)
     let complexityRange = [1, 5];
-    let playtimeRange = [10, 300];
+    let playtimeRange = [10, 180];
 
     // Funktion: Aktualisiert Complexity-Store
     function updateComplexityRange(value) {
@@ -61,7 +62,7 @@
     <RangeSlider
         bind:values={playtimeRange}
         min={10}
-        max={300}
+        max={180}
         step={5}
         pips
         float
@@ -78,7 +79,6 @@
         gap: 10px;
         padding: 10px;
         border: 1px solid #ccc;
-        border-radius: 5px;
         margin-bottom: 20px;
     }
 </style>

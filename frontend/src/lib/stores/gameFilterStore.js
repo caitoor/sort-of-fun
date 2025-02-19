@@ -1,13 +1,21 @@
+// src/lib/stores/gameFilterStore.js
+
 import { writable, derived } from "svelte/store";
+import { getEstimatedPlaytime } from "$lib/utils.js";
 import { games } from "$lib/stores/gameStore.js";
-import { calculateFinalScore } from "$lib/gameScorer.js";
+import {
+    getPlaytimeCoefficient,
+    getComplexityCoefficient,
+    getPlayerCountCoefficient
+} from "$lib/gameScorer.js";
+
 
 // Filter options
 export const playerCount = writable(null);
 export const minComplexity = writable(1);
 export const maxComplexity = writable(5);
 export const minPlaytime = writable(10);
-export const maxPlaytime = writable(300);
+export const maxPlaytime = writable(180);
 
 // Derived store: Applies filters reactively
 export const filteredGames = derived(
@@ -16,40 +24,40 @@ export const filteredGames = derived(
         if (!$games.length) return [];
 
         return $games
+            .filter(game => {
+                // ✅ Exclude games that don't match the player count at all
+                if ($playerCount && (game.minPlayers > $playerCount || game.maxPlayers < $playerCount)) {
+                    return false; // Completely remove game
+                }
+                return true;
+            })
             .map(game => {
-                let score = game.bggRating || 0; // Basis ist das BGG-Rating
-                let factor = 1; // Multiplikationsfaktor für die Anpassung
+                let score = game.bggRating || 0;
+                let factor = 1;
 
-                // 1️⃣ Player Count Filter (eliminiert Spiele, falls gesetzt)
-                if ($playerCount) {
-                    if (game.minPlayers > $playerCount || game.maxPlayers < $playerCount) {
-                        return null; // Spiel wird aussortiert
-                    }
+                // Get estimated playtime based on selected player count
+                const estimatedPlaytime = getEstimatedPlaytime(game, $playerCount);
+
+                // Compute coefficient factors
+                const complexityFactor = getComplexityCoefficient(game.complexity, $minComplexity, $maxComplexity);
+                const playtimeFactor = getPlaytimeCoefficient(estimatedPlaytime, $minPlaytime, $maxPlaytime);
+                const playerCountFactor = getPlayerCountCoefficient(game, game.playerRatings || [], $playerCount);
+
+                // Logging for debugging specific game (e.g., "Ark Nova")
+                if (game.name === "Arche Nova") {
+                    console.log(
+                        `🎲 ${game.name} → Complexity: ${game.complexity} → Playtime: ${estimatedPlaytime} → ` +
+                        `Complexity Factor: ${complexityFactor.toFixed(2)} → Playtime Factor: ${playtimeFactor.toFixed(2)} → ` +
+                        `Player Count Factor: ${playerCountFactor.toFixed(2)}`
+                    );
                 }
 
-                // 2️⃣ Complexity Faktor (kein Ausschluss, aber Score-Anpassung)
-                if (game.complexity) {
-                    if (game.complexity < $minComplexity) {
-                        factor *= (game.complexity - ($minComplexity - 1)) / $minComplexity;
-                    } else if (game.complexity > $maxComplexity) {
-                        factor *= ($maxComplexity + 1 - game.complexity) / (6 - $maxComplexity);
-                    }
-                }
-
-                // 3️⃣ Playtime Faktor (kein Ausschluss, aber Score-Anpassung)
-                const estimatedPlaytime = game.estimatedPlaytime || game.maxPlaytime;
-                if (estimatedPlaytime < $minPlaytime) {
-                    factor *= (estimatedPlaytime - ($minPlaytime - 5)) / $minPlaytime;
-                } else if (estimatedPlaytime > $maxPlaytime) {
-                    factor *= ($maxPlaytime + 5 - estimatedPlaytime) / (310 - $maxPlaytime);
-                }
-
-                // Endgültigen Score berechnen (BGG Rating * Faktor)
-                score *= Math.max(factor, 0.1); // Mindestens 10% behalten (Vermeidung von Score = 0)
+                // Apply all coefficients multiplicatively
+                factor *= complexityFactor * playtimeFactor * playerCountFactor;
+                score *= Math.max(factor, 0.1); // Ensure score never drops below 10% of original BGG rating
 
                 return { ...game, score };
             })
-            .filter(game => game !== null) // Entfernte Spiele aus dem Array werfen
             .sort((a, b) => b.score - a.score);
     }
 );

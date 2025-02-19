@@ -1,54 +1,46 @@
-// frontend/src/lib/gameScorer.js - Calculates game scores based on user preferences
+// src/lib/gameScorer.js
 
-export function calculateAdjustedRating(game, playerCountRatings, playerCount) {
-    const R = game.bggRating;
-    if (!R) return 0;
+const PLAYERCOUNT_FACTOR_BEST = 1.1;
+const PLAYERCOUNT_FACTOR_RECOMMENDED = .9;
+const PLAYERCOUNT_FACTOR_NOT_RECOMMENDED = 0.3;
 
-    // Ensure we use the selected player count for filtering
-    const ratingData = playerCountRatings.find(r => r.numPlayers === playerCount);
-    if (!ratingData) return R; // No data → return base rating
+export function getPlaytimeCoefficient(estimatedPlaytime, minPlaytime, maxPlaytime) {
+    maxPlaytime = Math.min(maxPlaytime, 180);
+    if (estimatedPlaytime > maxPlaytime) {
+        return maxPlaytime / estimatedPlaytime;
+    }
+    if (estimatedPlaytime < minPlaytime) {
+        return estimatedPlaytime / minPlaytime;
+    }
+    return 1;
+}
+
+export function getComplexityCoefficient(gameComplexity, minComplexity, maxComplexity) {
+    if (!gameComplexity) return 1;
+
+    if (gameComplexity > maxComplexity) {
+        return maxComplexity / gameComplexity;
+    }
+    if (gameComplexity < minComplexity) {
+        return gameComplexity / minComplexity;
+    }
+    return 1;
+}
+
+export function getPlayerCountCoefficient(game, playerCountRatings, selectedPlayerCount) {
+    if (!selectedPlayerCount || !playerCountRatings.length) return 1;
+    if (game.minPlayers === game.maxPlayers) return 1;
+
+    const ratingData = playerCountRatings.find(r => r.numPlayers === selectedPlayerCount);
+    if (!ratingData) return 1; // No specific rating data → No adjustment
 
     const { bestVotes, recommendedVotes, notRecommendedVotes } = ratingData;
     const totalVotes = bestVotes + recommendedVotes + notRecommendedVotes;
-    if (totalVotes === 0) return R;
+    if (totalVotes === 0) return 1; // No votes → Neutral coefficient
 
     const P_best = bestVotes / totalVotes;
     const P_rec = recommendedVotes / totalVotes;
     const P_not_rec = notRecommendedVotes / totalVotes;
 
-    return 5 + (R - 5) * (P_best * 1.1 + P_rec * 0.9 + P_not_rec * 0.5);
-}
-
-export function calculateComplexityScore(game, targetComplexity, maxDeviation) {
-    if (!targetComplexity || !maxDeviation || !game.complexity) return 1;
-    return 1 - Math.abs(targetComplexity - game.complexity) / maxDeviation;
-}
-
-export function calculatePlaytimeScore(game, targetPlaytime, maxDeviation) {
-    if (!targetPlaytime || !maxDeviation || !game.playtime) return 1;
-    return 1 - Math.abs(targetPlaytime - game.playtime) / maxDeviation;
-}
-
-export function calculateAgeScore(game, youngestPlayerAge) {
-    if (!youngestPlayerAge || !game.yearPublished) return 1;
-    return 1 - Math.max(0, (game.yearPublished - youngestPlayerAge) / 10);
-}
-
-export function calculateFinalScore(game, preferences, playerCountRatings = []) {
-    // console.log(`🔎 Calculating final score for ${game.name}`);
-    // console.log("➡️ Preferences:", preferences);
-    // console.log("➡️ Player Count Ratings:", playerCountRatings);
-    const adjustedRating = game.minPlayers === game.maxPlayers
-        ? game.bggRating // Don't modify score if only one valid player count
-        : calculateAdjustedRating(game, playerCountRatings, preferences.playerCount);
-    // console.log(`🎯 Adjusted Rating for ${game.name}:`, adjustedRating);
-    const complexityScore = preferences.targetComplexity
-        ? calculateComplexityScore(game, preferences.targetComplexity, preferences.maxComplexityDeviation)
-        : 1; // If no complexity filter, no penalty
-
-    const playtimeScore = preferences.targetPlaytime
-        ? calculatePlaytimeScore(game, preferences.targetPlaytime, preferences.maxPlaytimeDeviation)
-        : 1; // If no playtime filter, no penalty
-
-    return adjustedRating;
+    return P_best * PLAYERCOUNT_FACTOR_BEST + P_rec * PLAYERCOUNT_FACTOR_RECOMMENDED + P_not_rec * PLAYERCOUNT_FACTOR_NOT_RECOMMENDED;
 }

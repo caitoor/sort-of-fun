@@ -30,7 +30,6 @@ export function formatPlayerCountRange(game) {
     return game.minPlayers === game.maxPlayers ? `${game.minPlayers}` : `${game.minPlayers}-${game.maxPlayers}`;
 }
 
-
 /**
  * Abbreviates an array of numbers into a string.
  * Successive numbers are represented as a range.
@@ -65,4 +64,17 @@ export function decodeEntities(text) {
     const textarea = document.createElement("textarea");
     textarea.innerHTML = text;
     return textarea.value;
+}
+
+export function getEstimatedPlaytime(game, playerCount) {
+    const { minPlayers, maxPlayers, minPlaytime, maxPlaytime } = game;
+
+    if (minPlaytime === maxPlaytime) return minPlaytime; // Keine Range
+
+    if (!playerCount || playerCount < minPlayers || playerCount > maxPlayers) {
+        return Math.round((minPlaytime + maxPlaytime) / 2); // Mittelwert
+    }
+
+    const factor = (playerCount - minPlayers) / (maxPlayers - minPlayers);
+    return Math.round(minPlaytime + factor * (maxPlaytime - minPlaytime));
 }
