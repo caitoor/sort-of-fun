@@ -7,11 +7,12 @@
         minPlaytime,
         maxPlaytime,
     } from "$lib/stores/gameFilterStore.js";
+    import { MAX_PLAYTIME } from "$lib/stores/generalStore";
     import RangeSlider from "svelte-range-slider-pips";
 
     // Lokale Werte für Range-Slider (initialisieren)
     let complexityRange = [1, 5];
-    let playtimeRange = [10, 180];
+    let playtimeRange = [10, MAX_PLAYTIME];
 
     // Funktion: Aktualisiert Complexity-Store
     function updateComplexityRange(value) {

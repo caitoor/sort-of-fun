@@ -1,11 +1,13 @@
 // src/lib/gameScorer.js
 
+import { MAX_PLAYTIME } from "./stores/generalStore";
+
 const PLAYERCOUNT_FACTOR_BEST = 1.1;
 const PLAYERCOUNT_FACTOR_RECOMMENDED = .9;
 const PLAYERCOUNT_FACTOR_NOT_RECOMMENDED = 0.3;
 
 export function getPlaytimeCoefficient(estimatedPlaytime, minPlaytime, maxPlaytime) {
-    maxPlaytime = Math.min(maxPlaytime, 180);
+    estimatedPlaytime = Math.min(estimatedPlaytime, MAX_PLAYTIME);
     if (estimatedPlaytime > maxPlaytime) {
         return maxPlaytime / estimatedPlaytime;
     }

@@ -1,6 +1,7 @@
 // src/lib/stores/gameFilterStore.js
 
 import { writable, derived } from "svelte/store";
+import { MAX_PLAYTIME } from "./generalStore";
 import { getEstimatedPlaytime } from "$lib/utils.js";
 import { games } from "$lib/stores/gameStore.js";
 import {
@@ -15,7 +16,7 @@ export const playerCount = writable(null);
 export const minComplexity = writable(1);
 export const maxComplexity = writable(5);
 export const minPlaytime = writable(10);
-export const maxPlaytime = writable(180);
+export const maxPlaytime = writable(MAX_PLAYTIME);
 
 // Derived store: Applies filters reactively
 export const filteredGames = derived(
